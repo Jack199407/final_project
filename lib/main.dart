@@ -3,8 +3,14 @@ import 'pages/event/event_list_page.dart';
 import 'pages/customer/customer_list_page.dart';
 import '/pages/expense/expense_list_page.dart';
 import 'pages/vehicle/maintenance_list_page.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
+
+  // 初始化 SQLite FFI 支持（仅用于桌面环境）
+  sqfliteFfiInit();
+  databaseFactory = databaseFactoryFfi;
+
   runApp(const MyApp());
 }
 
