@@ -1,0 +1,25 @@
+{
+  "mainPage": "Main Page",
+  "eventPlanner": "Event Planner",
+  "customerList": "Customer List",
+  "expenseTracker": "Expense Tracker",
+  "vehicleMaintenance": "Vehicle Maintenance",
+  "newEvent": "New Event",
+  "eventName": "Event Name",
+  "dateFormat": "Date (YYYY-MM-DD)",
+  "timeFormat": "Time (HH:MM)",
+  "location": "Location",
+  "description": "Description",
+  "copyPreviousEvent": "Copy previous event?",
+  "copyPreviousEventQuestion": "Do you want to copy details from the last event?",
+  "yes": "Yes",
+  "no": "No",
+  "noEventsMessage": "No events yet. Tap + to add one!",
+  "createEvent": "Create Event",
+  "expenseList": "Expense List",
+  "noExpenses": "No expenses found.",
+  "addExpense": "Add Expense"
+  
+}
+
+  
