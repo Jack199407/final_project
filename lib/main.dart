@@ -1,15 +1,18 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter/foundation.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
+import 'localization/app_localizations.dart';
 import 'pages/event/event_list_page.dart';
 import 'pages/customer/customer_list_page.dart';
 import 'pages/expense/expense_list_page.dart';
 import 'pages/vehicle/maintenance_list_page.dart';
 
-void main() {
+// language change
+final ValueNotifier<Locale> localeNotifier = ValueNotifier(const Locale('en'));
 
+void main() {
   if (defaultTargetPlatform == TargetPlatform.windows ||
       defaultTargetPlatform == TargetPlatform.linux ||
       defaultTargetPlatform == TargetPlatform.macOS) {
@@ -25,11 +28,35 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Group Project App',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MainPage(),
-      debugShowCheckedModeBanner: false,
+    return ValueListenableBuilder<Locale>(
+      valueListenable: localeNotifier,
+      builder: (context, locale, _) {
+        return MaterialApp(
+          title: 'Group Project App',
+          theme: ThemeData(primarySwatch: Colors.blue),
+          debugShowCheckedModeBanner: false,
+          home: const MainPage(),
+          locale: locale,
+          supportedLocales: const [
+            Locale('en'),
+            Locale('zh'),
+          ],
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          localeResolutionCallback: (locale, supportedLocales) {
+            for (var supportedLocale in supportedLocales) {
+              if (supportedLocale.languageCode == locale?.languageCode) {
+                return supportedLocale;
+              }
+            }
+            return supportedLocales.first;
+          },
+        );
+      },
     );
   }
 }
@@ -39,14 +66,33 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Main Page")),
+      appBar: AppBar(
+        title: Text(loc.translate('mainPage')),
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.language),
+            onSelected: (value) {
+              if (value == 'en') {
+                localeNotifier.value = const Locale('en');
+              } else if (value == 'zh') {
+                localeNotifier.value = const Locale('zh');
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(value: 'en', child: Text('English')),
+              const PopupMenuItem(value: 'zh', child: Text('中文')),
+            ],
+          ),
+        ],
+      ),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // 1. Event Planner
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -54,10 +100,8 @@ class MainPage extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => const EventListPage()),
                   );
                 },
-                child: const Text("Event Planner"),
+                child: Text(loc.translate('eventPlanner')),
               ),
-
-              // 2. Customer List
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -65,10 +109,8 @@ class MainPage extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => const CustomerListPage()),
                   );
                 },
-                child: const Text("Customer List"),
+                child: Text(loc.translate('customerList')),
               ),
-
-              // 3. Expense Tracker
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -76,10 +118,8 @@ class MainPage extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => const ExpenseListPage()),
                   );
                 },
-                child: const Text("Expense Tracker"),
+                child: Text(loc.translate('expenseTracker')),
               ),
-
-              // 4. Vehicle Maintenance
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -87,9 +127,8 @@ class MainPage extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => const MaintenanceListPage()),
                   );
                 },
-                child: const Text("Vehicle Maintenance"),
+                child: Text(loc.translate('vehicleMaintenance')),
               ),
-
             ],
           ),
         ),
@@ -97,4 +136,10 @@ class MainPage extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+
 

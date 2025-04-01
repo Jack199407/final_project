@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // If simulating encrypted storage
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../database/database_helper.dart';
 import 'event_form_page.dart';
+import '../../localization/app_localizations.dart'; // localization
 
-/// Displays a list of events from the 'events' table.
-/// Allows adding, viewing, editing, and deleting events.
 class EventListPage extends StatefulWidget {
   const EventListPage({Key? key}) : super(key: key);
 
@@ -21,7 +20,6 @@ class _EventListPageState extends State<EventListPage> {
     _refreshEvents();
   }
 
-  /// Queries the 'events' table and updates [_eventList] with the result.
   Future<void> _refreshEvents() async {
     final data = await DatabaseHelper.instance.queryAll('events');
     setState(() {
@@ -29,43 +27,43 @@ class _EventListPageState extends State<EventListPage> {
     });
   }
 
-  /// Displays an AlertDialog with instructions on how to use the event list page.
   void _showHelpDialog() {
+    final loc = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('How to use'),
-        content: const Text(
-          '1. Click the "+" button to add a new event.\n'
-          '2. Tap an event to edit its details.\n'
-          '3. Tap the delete icon to remove an event.\n'
-          '4. Enjoy!',
+        title: Text(loc.translate('howToUse')),
+        content: Text(
+          '${loc.translate('howToUseInstruction1')}\n'
+          '${loc.translate('howToUseInstruction2')}\n'
+          '${loc.translate('howToUseInstruction3')}\n'
+          '${loc.translate('howToUseInstruction4')}',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('OK'),
+            child: Text(loc.translate('ok')),
           ),
         ],
       ),
     );
   }
 
-  /// Deletes an event by its [id] and refreshes the list.
-  /// Shows a Snackbar notification upon successful deletion.
   Future<void> _deleteEvent(int id, String name) async {
+    final loc = AppLocalizations.of(context);
     await DatabaseHelper.instance.delete('events', id);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Deleted "$name" successfully!')),
+      SnackBar(content: Text('${loc.translate('eventDeletedMessage').replaceAll('{name}', name)}')),
     );
     _refreshEvents();
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Event Planner'),
+        title: Text(loc.translate('eventPlanner')),
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
@@ -74,23 +72,21 @@ class _EventListPageState extends State<EventListPage> {
         ],
       ),
       body: _eventList.isEmpty
-          ? const Center(child: Text('No events yet. Tap + to add one!'))
+          ? Center(child: Text(loc.translate('noEventsMessage')))
           : ListView.builder(
               itemCount: _eventList.length,
               itemBuilder: (context, index) {
                 final event = _eventList[index];
                 return ListTile(
                   title: Text(event['name']),
-                  subtitle: Text('${event['date']} at ${event['time']}'),
+                  subtitle: Text('${event['date']} ${loc.translate('at')} ${event['time']}'),
                   onTap: () async {
-                    // Navigate to the form page to edit the event.
                     final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (_) => EventFormPage(event: event),
                       ),
                     );
-                    // If the form page returns true, refresh the list.
                     if (result == true) {
                       _refreshEvents();
                     }
@@ -105,12 +101,10 @@ class _EventListPageState extends State<EventListPage> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () async {
-          // Navigate to the form page to create a new event.
           final result = await Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const EventFormPage()),
           );
-          // If the form page returns true, refresh the list.
           if (result == true) {
             _refreshEvents();
           }
@@ -119,3 +113,6 @@ class _EventListPageState extends State<EventListPage> {
     );
   }
 }
+
+
+

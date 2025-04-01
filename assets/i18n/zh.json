@@ -1,0 +1,24 @@
+{
+  "mainPage": "主页面",
+  "eventPlanner": "事件计划",
+  "customerList": "客户列表",
+  "expenseTracker": "费用追踪",
+  "vehicleMaintenance": "车辆维护",
+  "newEvent": "新建事件",
+  "eventName": "事件名称",
+  "dateFormat": "日期 (YYYY-MM-DD)",
+  "timeFormat": "时间 (HH:MM)",
+  "location": "地点",
+  "description": "描述",
+  "copyPreviousEvent": "复制上一个事件？",
+  "copyPreviousEventQuestion": "是否复制上一个事件的详情？",
+  "yes": "是",
+  "no": "否",
+  "noEventsMessage": "暂无事件，点击 + 添加新事件！",
+  "createEvent": "创建事件",
+  "expenseList": "费用列表",
+  "noExpenses": "暂无费用记录。",
+  "addExpense": "添加费用"
+  
+}
+  

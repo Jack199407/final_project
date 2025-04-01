@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../database/database_helper.dart';
+import '../../localization/app_localizations.dart'; // localization
 
-/// A page for creating or editing an event.
-/// 
-/// If [event] is null, the page operates in "create" mode;
-/// otherwise, it operates in "edit" mode with an existing event.
 class EventFormPage extends StatefulWidget {
   final Map<String, dynamic>? event;
 
@@ -24,27 +21,22 @@ class _EventFormPageState extends State<EventFormPage> {
   late TextEditingController _locationController;
   late TextEditingController _descriptionController;
 
-  /// Returns true if the page is in edit mode.
   bool get _isEditMode => widget.event != null;
 
   @override
   void initState() {
     super.initState();
-    // Initialize form fields with existing event data if available.
     _nameController = TextEditingController(text: widget.event?['name'] ?? '');
     _dateController = TextEditingController(text: widget.event?['date'] ?? '');
     _timeController = TextEditingController(text: widget.event?['time'] ?? '');
     _locationController = TextEditingController(text: widget.event?['location'] ?? '');
-    _descriptionController =
-        TextEditingController(text: widget.event?['description'] ?? '');
+    _descriptionController = TextEditingController(text: widget.event?['description'] ?? '');
 
-    // If creating a new event, ask whether to copy the previous event's details.
     if (!_isEditMode) {
       _askToCopyLastEvent();
     }
   }
 
-  /// Prompts the user to copy the details from the last saved event in SharedPreferences.
   Future<void> _askToCopyLastEvent() async {
     final prefs = await SharedPreferences.getInstance();
     final savedName = prefs.getString('lastEvent_name') ?? '';
@@ -53,18 +45,18 @@ class _EventFormPageState extends State<EventFormPage> {
     final savedLocation = prefs.getString('lastEvent_location') ?? '';
     final savedDescription = prefs.getString('lastEvent_description') ?? '';
 
-    // If no saved data exists, do not show the dialog.
     if (savedName.isEmpty && savedDate.isEmpty) return;
 
+    final loc = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Copy previous event?'),
-        content: const Text('Do you want to copy details from the last event?'),
+        title: Text(loc.translate('copyPreviousEvent')),
+        content: Text(loc.translate('copyPreviousEventQuestion')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('No'),
+            child: Text(loc.translate('no')),
           ),
           TextButton(
             onPressed: () {
@@ -77,14 +69,13 @@ class _EventFormPageState extends State<EventFormPage> {
                 _descriptionController.text = savedDescription;
               });
             },
-            child: const Text('Yes'),
+            child: Text(loc.translate('yes')),
           ),
         ],
       ),
     );
   }
 
-  /// Saves the current event details to SharedPreferences for future use.
   Future<void> _saveEventToPrefs(Map<String, dynamic> eventData) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('lastEvent_name', eventData['name'] ?? '');
@@ -94,10 +85,9 @@ class _EventFormPageState extends State<EventFormPage> {
     await prefs.setString('lastEvent_description', eventData['description'] ?? '');
   }
 
-  /// Validates the form and submits the event data to the database.
-  /// 
-  /// In edit mode, updates the existing event; in create mode, inserts a new event.
   Future<void> _onSubmit() async {
+    final loc = AppLocalizations.of(context);
+
     if (_formKey.currentState!.validate()) {
       final eventData = {
         'name': _nameController.text,
@@ -111,37 +101,37 @@ class _EventFormPageState extends State<EventFormPage> {
         final eventId = widget.event!['id'] as int;
         await DatabaseHelper.instance.update('events', eventData, eventId);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Event updated successfully!')),
+          SnackBar(content: Text(loc.translate('eventUpdated'))),
         );
       } else {
         final id = await DatabaseHelper.instance.insert('events', eventData);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Event created (ID=$id) successfully!')),
+          SnackBar(content: Text('${loc.translate('eventCreated')} (ID=$id)')),
         );
         await _saveEventToPrefs({...eventData, 'id': id});
       }
 
-      // Return to the previous page and indicate that a change occurred.
       Navigator.pop(context, true);
     }
   }
 
-  /// Deletes the current event from the database (available only in edit mode).
   Future<void> _onDelete() async {
     if (!_isEditMode) return;
+    final loc = AppLocalizations.of(context);
     final eventId = widget.event!['id'] as int;
     await DatabaseHelper.instance.delete('events', eventId);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Event deleted successfully!')),
+      SnackBar(content: Text(loc.translate('eventDeleted'))),
     );
     Navigator.pop(context, true);
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditMode ? 'Edit Event' : 'New Event'),
+        title: Text(_isEditMode ? loc.translate('editEvent') : loc.translate('newEvent')),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -149,53 +139,48 @@ class _EventFormPageState extends State<EventFormPage> {
           key: _formKey,
           child: Column(
             children: [
-              // Event Name
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Event Name'),
+                decoration: InputDecoration(labelText: loc.translate('eventName')),
                 validator: (value) =>
-                    value == null || value.isEmpty ? 'Name is required' : null,
+                    value == null || value.isEmpty ? loc.translate('nameRequired') : null,
               ),
-              // Date
               TextFormField(
                 controller: _dateController,
-                decoration: const InputDecoration(labelText: 'Date (YYYY-MM-DD)'),
+                decoration: InputDecoration(labelText: loc.translate('dateFormat')),
                 validator: (value) =>
-                    value == null || value.isEmpty ? 'Date is required' : null,
+                    value == null || value.isEmpty ? loc.translate('dateRequired') : null,
               ),
-              // Time
               TextFormField(
                 controller: _timeController,
-                decoration: const InputDecoration(labelText: 'Time (HH:MM)'),
+                decoration: InputDecoration(labelText: loc.translate('timeFormat')),
                 validator: (value) =>
-                    value == null || value.isEmpty ? 'Time is required' : null,
+                    value == null || value.isEmpty ? loc.translate('timeRequired') : null,
               ),
-              // Location
               TextFormField(
                 controller: _locationController,
-                decoration: const InputDecoration(labelText: 'Location'),
+                decoration: InputDecoration(labelText: loc.translate('location')),
                 validator: (value) =>
-                    value == null || value.isEmpty ? 'Location is required' : null,
+                    value == null || value.isEmpty ? loc.translate('locationRequired') : null,
               ),
-              // Description
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
+                decoration: InputDecoration(labelText: loc.translate('description')),
                 maxLines: 3,
                 validator: (value) =>
-                    value == null || value.isEmpty ? 'Description is required' : null,
+                    value == null || value.isEmpty ? loc.translate('descriptionRequired') : null,
               ),
               const SizedBox(height: 20),
-              // Submit button (Create or Update)
               ElevatedButton(
                 onPressed: _onSubmit,
-                child: Text(_isEditMode ? 'Update Event' : 'Create Event'),
+                child: Text(_isEditMode
+                    ? loc.translate('updateEvent')
+                    : loc.translate('createEvent')),
               ),
-              // Delete button (only in edit mode)
               if (_isEditMode)
                 OutlinedButton(
                   onPressed: _onDelete,
-                  child: const Text('Delete Event'),
+                  child: Text(loc.translate('deleteEvent')),
                 ),
             ],
           ),
@@ -204,6 +189,8 @@ class _EventFormPageState extends State<EventFormPage> {
     );
   }
 }
+
+
 
 
 
