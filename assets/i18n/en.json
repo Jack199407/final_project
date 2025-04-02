@@ -17,9 +17,14 @@
   "noEventsMessage": "No events yet. Tap + to add one!",
   "createEvent": "Create Event",
   "expenseList": "Expense List",
-  "noExpenses": "No expenses found.",
-  "addExpense": "Add Expense"
-  
+  "noExpense": "No expenses found.",
+  "addExpense": "Add Expense",
+  "editEvent": "Edit Event",
+  "updateEvent": "Update Event",
+  "deleteEvent": "Delete Event",
+  "nameRequired": "Name is required",
+  "amount": "Amount",
+  "date": "Date"
 }
 
   

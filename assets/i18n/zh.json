@@ -17,8 +17,13 @@
   "noEventsMessage": "暂无事件，点击 + 添加新事件！",
   "createEvent": "创建事件",
   "expenseList": "费用列表",
-  "noExpenses": "暂无费用记录。",
-  "addExpense": "添加费用"
-  
+  "noExpense": "暂无费用记录。",
+  "addExpense": "添加费用",
+  "editEvent": "编辑事件",
+  "updateEvent": "更新事件",
+  "deleteEvent": "删除事件",
+  "nameRequired": "名称为必填项",
+  "amount": "金额",
+  "date": "日期"
 }
   
