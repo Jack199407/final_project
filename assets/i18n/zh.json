@@ -32,6 +32,19 @@
   "howToUseInstruction4": "4.尽情使用事件计划工具吧！",
   "at":"在",
   "howToUse":"如何使用:",
-  "ok":"好的"
+  "ok":"好的",
+  "addMaintenance": "添加维护记录",
+  "editMaintenance": "编辑维护记录",
+  "vehicleName": "车辆名称",
+  "vehicleType": "车辆类型",
+  "serviceType": "服务类型",
+  "serviceDate": "服务日期（YYYY-MM-DD）",
+  "mileage": "里程数（公里）",
+  "cost": "费用（¥）",
+  "save": "保存",
+  "update": "更新",
+  "required": "必填",
+  "vehicleMaintenanceRecords": "车辆维护记录",
+  "noRecordsTapToAdd": "暂无记录，点击 + 添加！"
 }
   

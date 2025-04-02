@@ -1,6 +1,9 @@
+// ✅ MaintenanceListPage with internationalization
+
 import 'package:flutter/material.dart';
 import '../../database/database_helper.dart';
 import 'maintenance_form_page.dart';
+import '../../localization/app_localizations.dart';
 
 class MaintenanceListPage extends StatefulWidget {
   const MaintenanceListPage({Key? key}) : super(key: key);
@@ -32,15 +35,21 @@ class _MaintenanceListPageState extends State<MaintenanceListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Vehicle Maintenance Records")),
-      body: ListView.builder(
+      appBar: AppBar(title: Text(loc.translate('vehicleMaintenanceRecords'))),
+      body: _maintenanceRecords.isEmpty
+          ? Center(
+        child: Text(loc.translate('noRecordsTapToAdd')),
+      )
+          : ListView.builder(
         itemCount: _maintenanceRecords.length,
         itemBuilder: (context, index) {
           final record = _maintenanceRecords[index];
           return ListTile(
-            title: Text(record['vehicle_name']),
-            subtitle: Text("Service: ${record['service_type']} - ${record['service_date']}"),
+            title: Text(record['vehicle_name'] ?? ''),
+            subtitle: Text("${record['service_type']} - ${record['service_date']}"),
             onTap: () {
               Navigator.push(
                 context,

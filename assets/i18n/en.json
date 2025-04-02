@@ -32,7 +32,20 @@
   "howToUseInstruction4": "4.Enjoy using the Event Planner!",
   "at":"at",
   "howToUse":"How to Use:",
-  "ok":"OK"
+  "ok":"OK",
+  "addMaintenance": "Add Maintenance",
+  "editMaintenance": "Edit Maintenance",
+  "vehicleName": "Vehicle Name",
+  "vehicleType": "Vehicle Type",
+  "serviceType": "Service Type",
+  "serviceDate": "Service Date (YYYY-MM-DD)",
+  "mileage": "Mileage (km)",
+  "cost": "Cost ($)",
+  "save": "Save",
+  "update": "Update",
+  "required": "Required",
+  "vehicleMaintenanceRecords": "Vehicle Maintenance Records",
+  "noRecordsTapToAdd": "No records yet. Tap + to add one!"
 }
 
   

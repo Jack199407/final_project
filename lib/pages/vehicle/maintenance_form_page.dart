@@ -1,13 +1,16 @@
+// ✅ MaintenanceFormPage with internationalization support
+
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../database/database_helper.dart';
+import '../../localization/app_localizations.dart';
 
 class MaintenanceFormPage extends StatefulWidget {
   final Map<String, dynamic>? record;
   const MaintenanceFormPage({Key? key, this.record}) : super(key: key);
 
   @override
-  _MaintenanceFormPageState createState() => _MaintenanceFormPageState();
+  State<MaintenanceFormPage> createState() => _MaintenanceFormPageState();
 }
 
 class _MaintenanceFormPageState extends State<MaintenanceFormPage> {
@@ -19,150 +22,139 @@ class _MaintenanceFormPageState extends State<MaintenanceFormPage> {
   final _mileageController = TextEditingController();
   final _costController = TextEditingController();
 
-  final _storage = const FlutterSecureStorage(); // 用于保存上次记录
-
   @override
   void initState() {
     super.initState();
     if (widget.record != null) {
-      _vehicleNameController.text = widget.record!['vehicle_name'];
-      _vehicleTypeController.text = widget.record!['vehicle_type'];
-      _serviceTypeController.text = widget.record!['service_type'];
-      _serviceDateController.text = widget.record!['service_date'];
-      _mileageController.text = widget.record!['mileage'].toString();
-      _costController.text = widget.record!['cost'].toString();
+      _populateFields(widget.record!);
+    } else {
+      _loadFromPreferences();
     }
   }
 
-  Future<void> _saveMaintenanceRecord() async {
+  void _populateFields(Map<String, dynamic> record) {
+    _vehicleNameController.text = record['vehicle_name'] ?? '';
+    _vehicleTypeController.text = record['vehicle_type'] ?? '';
+    _serviceTypeController.text = record['service_type'] ?? '';
+    _serviceDateController.text = record['service_date'] ?? '';
+    _mileageController.text = record['mileage'].toString();
+    _costController.text = record['cost'].toString();
+  }
+
+  Future<void> _loadFromPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    _vehicleNameController.text = prefs.getString('last_vehicle_name') ?? '';
+    _vehicleTypeController.text = prefs.getString('last_vehicle_type') ?? '';
+    _serviceTypeController.text = prefs.getString('last_service_type') ?? '';
+    _serviceDateController.text = prefs.getString('last_service_date') ?? '';
+    _mileageController.text = prefs.getString('last_mileage') ?? '';
+    _costController.text = prefs.getString('last_cost') ?? '';
+  }
+
+  Future<void> _saveToPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('last_vehicle_name', _vehicleNameController.text);
+    await prefs.setString('last_vehicle_type', _vehicleTypeController.text);
+    await prefs.setString('last_service_type', _serviceTypeController.text);
+    await prefs.setString('last_service_date', _serviceDateController.text);
+    await prefs.setString('last_mileage', _mileageController.text);
+    await prefs.setString('last_cost', _costController.text);
+  }
+
+  Future<void> _saveRecord() async {
     if (_formKey.currentState!.validate()) {
       final record = {
         'vehicle_name': _vehicleNameController.text,
         'vehicle_type': _vehicleTypeController.text,
         'service_type': _serviceTypeController.text,
         'service_date': _serviceDateController.text,
-        'mileage': int.parse(_mileageController.text),
-        'cost': double.parse(_costController.text),
+        'mileage': int.tryParse(_mileageController.text) ?? 0,
+        'cost': double.tryParse(_costController.text) ?? 0.0,
       };
 
-      // Save to DB
       if (widget.record == null) {
         await DatabaseHelper.instance.insert('maintenance', record);
+        await _saveToPreferences();
       } else {
         await DatabaseHelper.instance.update('maintenance', record, widget.record!['id']);
       }
 
-      // Save to EncryptedSharedPreferences
-      for (var entry in record.entries) {
-        await _storage.write(key: entry.key, value: entry.value.toString());
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Record saved successfully!")),
-      );
-
+      if (!mounted) return;
       Navigator.pop(context);
     }
   }
 
-  Future<void> _loadLastRecord() async {
-    _vehicleNameController.text = await _storage.read(key: 'vehicle_name') ?? '';
-    _vehicleTypeController.text = await _storage.read(key: 'vehicle_type') ?? '';
-    _serviceTypeController.text = await _storage.read(key: 'service_type') ?? '';
-    _serviceDateController.text = await _storage.read(key: 'service_date') ?? '';
-    _mileageController.text = await _storage.read(key: 'mileage') ?? '';
-    _costController.text = await _storage.read(key: 'cost') ?? '';
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Last record loaded.")),
-    );
-  }
-
-  void _showHelpDialog() {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Help / Instructions"),
-        content: const Text(
-            "• Fill out all fields before saving.\n"
-                "• Press 'Copy Last' to reuse your last maintenance record.\n"
-                "• Click 'Save' to submit, or return to the previous screen to cancel."),
-        actions: [
-          TextButton(
-            child: const Text("OK"),
-            onPressed: () => Navigator.pop(context),
-          )
-        ],
-      ),
-    );
+  Future<void> _deleteRecord() async {
+    if (widget.record != null) {
+      await DatabaseHelper.instance.delete('maintenance', widget.record!['id']);
+      if (!mounted) return;
+      Navigator.pop(context);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isEditing = widget.record != null;
+    final loc = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Maintenance Record Form"),
-        actions: [
+        title: Text(isEditing ? loc.translate('editMaintenance') : loc.translate('addMaintenance')),
+        actions: isEditing
+            ? [
           IconButton(
-            icon: const Icon(Icons.help_outline),
-            onPressed: _showHelpDialog,
-          )
-        ],
+            icon: const Icon(Icons.delete, color: Colors.red),
+            onPressed: _deleteRecord,
+          ),
+        ]
+            : null,
       ),
-      body: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
           child: ListView(
             children: [
               TextFormField(
                 controller: _vehicleNameController,
-                decoration: const InputDecoration(labelText: "Vehicle Name"),
-                validator: (value) => value == null || value.isEmpty ? "Required" : null,
+                decoration: InputDecoration(labelText: loc.translate('vehicleName')),
+                validator: (value) => value == null || value.isEmpty ? loc.translate('required') : null,
               ),
               TextFormField(
                 controller: _vehicleTypeController,
-                decoration: const InputDecoration(labelText: "Vehicle Type"),
-                validator: (value) => value == null || value.isEmpty ? "Required" : null,
+                decoration: InputDecoration(labelText: loc.translate('vehicleType')),
+                validator: (value) => value == null || value.isEmpty ? loc.translate('required') : null,
               ),
               TextFormField(
                 controller: _serviceTypeController,
-                decoration: const InputDecoration(labelText: "Service Type"),
-                validator: (value) => value == null || value.isEmpty ? "Required" : null,
+                decoration: InputDecoration(labelText: loc.translate('serviceType')),
+                validator: (value) => value == null || value.isEmpty ? loc.translate('required') : null,
               ),
               TextFormField(
                 controller: _serviceDateController,
-                decoration: const InputDecoration(labelText: "Service Date"),
-                validator: (value) => value == null || value.isEmpty ? "Required" : null,
+                decoration: InputDecoration(
+                  labelText: loc.translate('serviceDate'),
+                  hintText: 'YYYY-MM-DD',
+                ),
+                validator: (value) => value == null || value.isEmpty ? loc.translate('required') : null,
               ),
               TextFormField(
                 controller: _mileageController,
-                decoration: const InputDecoration(labelText: "Mileage"),
+                decoration: InputDecoration(labelText: loc.translate('mileage')),
                 keyboardType: TextInputType.number,
-                validator: (value) => value == null || value.isEmpty ? "Required" : null,
+                validator: (value) => value == null || value.isEmpty ? loc.translate('required') : null,
               ),
               TextFormField(
                 controller: _costController,
-                decoration: const InputDecoration(labelText: "Cost"),
+                decoration: InputDecoration(labelText: loc.translate('cost')),
                 keyboardType: TextInputType.number,
-                validator: (value) => value == null || value.isEmpty ? "Required" : null,
+                validator: (value) => value == null || value.isEmpty ? loc.translate('required') : null,
               ),
               const SizedBox(height: 20),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _saveMaintenanceRecord,
-                      child: const Text("Save"),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: _loadLastRecord,
-                    child: const Text("Copy Last"),
-                  ),
-                ],
-              )
+              ElevatedButton(
+                onPressed: _saveRecord,
+                child: Text(isEditing ? loc.translate('update') : loc.translate('save')),
+              ),
             ],
           ),
         ),
