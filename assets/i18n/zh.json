@@ -18,7 +18,15 @@
   "createEvent": "创建事件",
   "expenseList": "费用列表",
   "noExpenses": "暂无费用记录。",
-  "addExpense": "添加费用"
-  
+  "addExpense": "添加费用",
+  "editEvent": "编辑事件",
+  "updateEvent": "更新事件",
+  "deleteEvent": "删除事件",
+  "nameRequired": "名称为必填项",
+  "howToUseInstruction1": "点击 '+' 按钮添加新事件。",
+  "howToUseInstruction2": "点击事件编辑详细信息。",
+  "howToUseInstruction3": "点击删除图标移除事件。",
+  "howToUseInstruction4": "尽情使用事件计划工具吧！",
+  "at":"在"
 }
   
