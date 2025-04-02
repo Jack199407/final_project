@@ -1,5 +1,8 @@
+// ✅ Updated: expense_list_page.dart with multilingual empty state message
+
 import 'package:flutter/material.dart';
 import '../../database/database_helper.dart';
+import '../../localization/app_localizations.dart';
 import 'expense_form_page.dart';
 
 class ExpenseListPage extends StatefulWidget {
@@ -32,15 +35,24 @@ class _ExpenseListPageState extends State<ExpenseListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Expenses")),
-      body: ListView.builder(
+      appBar: AppBar(title: Text(loc.translate('expenseTracker'))),
+      body: _expenses.isEmpty
+          ? Center(
+        child: Text(
+          loc.translate('noExpense'),
+          style: const TextStyle(fontSize: 16),
+        ),
+      )
+          : ListView.builder(
         itemCount: _expenses.length,
         itemBuilder: (context, index) {
           final expense = _expenses[index];
           return ListTile(
             title: Text(expense['name']),
-            subtitle: Text("Amount: \$${expense['amount']} - Date: ${expense['date']}"),
+            subtitle: Text("${loc.translate('amount')}: \$${expense['amount']} - ${loc.translate('date')}: ${expense['date']}"),
             onTap: () {
               Navigator.push(
                 context,
