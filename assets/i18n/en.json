@@ -25,6 +25,19 @@
   "nameRequired": "Name is required",
   "amount": "Amount",
   "date": "Date"
+  "noExpenses": "No expenses found.",
+  "addExpense": "Add Expense",
+  "editEvent": "Edit Event",
+  "updateEvent": "Update Event",
+  "deleteEvent": "Delete Event",
+  "nameRequired": "Name is required",
+  "howToUseInstruction1": "1.Tap the '+' button to add a new event.",
+  "howToUseInstruction2": "2.Tap an event to edit its details.",
+  "howToUseInstruction3": "3.Tap the delete icon to remove an event.",
+  "howToUseInstruction4": "4.Enjoy using the Event Planner!",
+  "at":"at",
+  "howToUse":"How to Use:",
+  "ok":"OK"
 }
 
   

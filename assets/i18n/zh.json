@@ -25,5 +25,18 @@
   "nameRequired": "名称为必填项",
   "amount": "金额",
   "date": "日期"
+  "noExpenses": "暂无费用记录。",
+  "addExpense": "添加费用",
+  "editEvent": "编辑事件",
+  "updateEvent": "更新事件",
+  "deleteEvent": "删除事件",
+  "nameRequired": "名称为必填项",
+  "howToUseInstruction1": "1.点击 '+' 按钮添加新事件。",
+  "howToUseInstruction2": "2.点击事件编辑详细信息。",
+  "howToUseInstruction3": "3.点击删除图标移除事件。",
+  "howToUseInstruction4": "4.尽情使用事件计划工具吧！",
+  "at":"在",
+  "howToUse":"如何使用:",
+  "ok":"好的"
 }
   
