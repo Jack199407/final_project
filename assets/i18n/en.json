@@ -18,7 +18,15 @@
   "createEvent": "Create Event",
   "expenseList": "Expense List",
   "noExpenses": "No expenses found.",
-  "addExpense": "Add Expense"
+  "addExpense": "Add Expense",
+  "editEvent": "Edit Event",
+  "updateEvent": "Update Event",
+  "deleteEvent": "Delete Event",
+  "nameRequired": "Name is required",
+  "howToUseInstruction1": "Tap the '+' button to add a new event.",
+  "howToUseInstruction2": "Tap an event to edit its details.",
+  "howToUseInstruction3": "Tap the delete icon to remove an event.",
+  "howToUseInstruction4": "Enjoy using the Event Planner!"
   
 }
 
