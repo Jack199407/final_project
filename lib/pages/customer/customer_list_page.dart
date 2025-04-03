@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../database/database_helper.dart';
 import 'customer_form_page.dart';
+import '../../localization/app_localizations.dart';
 
 class CustomerListPage extends StatefulWidget {
   const CustomerListPage({Key? key}) : super(key: key);
@@ -32,15 +33,19 @@ class _CustomerListPageState extends State<CustomerListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Customers")),
-      body: ListView.builder(
+      appBar: AppBar(title: Text(loc.translate('customers'))),
+      body: _customers.isEmpty
+          ? Center(child: Text(loc.translate('noCustomersTapToAdd')))
+          : ListView.builder(
         itemCount: _customers.length,
         itemBuilder: (context, index) {
           final customer = _customers[index];
           return ListTile(
             title: Text("${customer['first_name']} ${customer['last_name']}"),
-            subtitle: Text("Birthday: ${customer['birthday']}"),
+            subtitle: Text("${loc.translate('birthday')}: ${customer['birthday']}"),
             onTap: () {
               Navigator.push(
                 context,

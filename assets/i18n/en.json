@@ -45,7 +45,15 @@
   "update": "Update",
   "required": "Required",
   "vehicleMaintenanceRecords": "Vehicle Maintenance Records",
-  "noRecordsTapToAdd": "No records yet. Tap + to add one!"
+  "noRecordsTapToAdd": "No records yet. Tap + to add one!",
+  "customers": "Customers",
+  "noCustomersTapToAdd": "No customers yet. Tap + to add one!",
+  "addCustomer": "Add Customer",
+  "editCustomer": "Edit Customer",
+  "firstName": "First Name",
+  "lastName": "Last Name",
+  "address": "Address",
+  "birthday": "Birthday (YYYY-MM-DD)",
+  "copyLastCustomerTitle": "Copy Previous Customer?",
+  "copyLastCustomerPrompt": "Would you like to copy the fields from your last customer?"
 }
-
-  

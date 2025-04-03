@@ -45,6 +45,15 @@
   "update": "更新",
   "required": "必填",
   "vehicleMaintenanceRecords": "车辆维护记录",
-  "noRecordsTapToAdd": "暂无记录，点击 + 添加！"
+  "noRecordsTapToAdd": "暂无记录，点击 + 添加！",
+  "customers": "客户列表",
+  "birthday": "生日",
+  "noCustomersTapToAdd": "暂无客户，点击 + 添加！",
+  "addCustomer": "添加客户",
+  "editCustomer": "编辑客户",
+  "firstName": "名字",
+  "lastName": "姓氏",
+  "address": "地址",
+  "copyLastCustomerTitle": "复制上一个客户？",
+  "copyLastCustomerPrompt": "是否复制上一个客户的资料？"
 }
-  
