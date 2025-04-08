@@ -55,5 +55,7 @@
   "address": "Address",
   "birthday": "Birthday (YYYY-MM-DD)",
   "copyLastCustomerTitle": "Copy Previous Customer?",
-  "copyLastCustomerPrompt": "Would you like to copy the fields from your last customer?"
+  "copyLastCustomerPrompt": "Would you like to copy the fields from your last customer?",
+  "category": "Category",
+  "paymentMethod": "Payment Method"
 }

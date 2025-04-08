@@ -55,5 +55,7 @@
   "lastName": "姓氏",
   "address": "地址",
   "copyLastCustomerTitle": "复制上一个客户？",
-  "copyLastCustomerPrompt": "是否复制上一个客户的资料？"
+  "copyLastCustomerPrompt": "是否复制上一个客户的资料？",
+  "category": "类别",
+  "paymentMethod": "支付方式"
 }

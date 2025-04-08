@@ -1,8 +1,7 @@
-// ✅ Updated: expense_form_page.dart with fixed date format and input hint
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../database/database_helper.dart';
+import '../../localization/app_localizations.dart';
 
 class ExpenseFormPage extends StatefulWidget {
   final Map<String, dynamic>? expense;
@@ -19,7 +18,6 @@ class _ExpenseFormPageState extends State<ExpenseFormPage> {
   final _amountController = TextEditingController();
   final _dateController = TextEditingController();
   final _paymentController = TextEditingController();
-  bool _loadedFromPrevious = false;
 
   @override
   void initState() {
@@ -36,21 +34,22 @@ class _ExpenseFormPageState extends State<ExpenseFormPage> {
     final hasData = prefs.containsKey('last_expense_name');
     if (!hasData) return;
 
+    final loc = AppLocalizations.of(context);
+
     final shouldLoad = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Copy Previous Expense?"),
-        content: const Text("Would you like to copy data from your last added expense?"),
+        title: Text(loc.translate("copyPreviousEvent")),
+        content: Text(loc.translate("copyPreviousEventQuestion")),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("No")),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text("Yes")),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(loc.translate("no"))),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text(loc.translate("yes"))),
         ],
       ),
     );
 
     if (shouldLoad == true) {
       setState(() {
-        _loadedFromPrevious = true;
         _nameController.text = prefs.getString('last_expense_name') ?? '';
         _categoryController.text = prefs.getString('last_expense_category') ?? '';
         _amountController.text = prefs.getString('last_expense_amount') ?? '';
@@ -70,6 +69,7 @@ class _ExpenseFormPageState extends State<ExpenseFormPage> {
   }
 
   Future<void> _saveExpense() async {
+    final loc = AppLocalizations.of(context);
     if (_formKey.currentState!.validate()) {
       final expense = {
         'name': _nameController.text,
@@ -108,9 +108,11 @@ class _ExpenseFormPageState extends State<ExpenseFormPage> {
   @override
   Widget build(BuildContext context) {
     final isEditing = widget.expense != null;
+    final loc = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEditing ? "Edit Expense" : "Add Expense"),
+        title: Text(isEditing ? loc.translate("editEvent") : loc.translate("addExpense")),
         actions: isEditing
             ? [
           IconButton(
@@ -128,37 +130,42 @@ class _ExpenseFormPageState extends State<ExpenseFormPage> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: "Expense Name"),
-                validator: (value) => value == null || value.isEmpty ? "Please enter an expense name" : null,
+                decoration: InputDecoration(labelText: loc.translate("eventName")),
+                validator: (value) =>
+                value == null || value.isEmpty ? loc.translate("nameRequired") : null,
               ),
               TextFormField(
                 controller: _categoryController,
-                decoration: const InputDecoration(labelText: "Category"),
-                validator: (value) => value == null || value.isEmpty ? "Please enter a category" : null,
+                decoration: InputDecoration(labelText: loc.translate("category")),
+                validator: (value) =>
+                value == null || value.isEmpty ? loc.translate("required") : null,
               ),
               TextFormField(
                 controller: _amountController,
-                decoration: const InputDecoration(labelText: "Amount"),
+                decoration: InputDecoration(labelText: loc.translate("amount")),
                 keyboardType: TextInputType.number,
-                validator: (value) => value == null || value.isEmpty ? "Please enter an amount" : null,
+                validator: (value) =>
+                value == null || value.isEmpty ? loc.translate("required") : null,
               ),
               TextFormField(
                 controller: _dateController,
-                decoration: const InputDecoration(
-                  labelText: "Date (YYYY-MM-DD HH:mm)",
-                  hintText: "e.g. 2024-05-01 14:30",
+                decoration: InputDecoration(
+                  labelText: loc.translate("date"),
+                  hintText: "YYYY-MM-DD HH:mm",
                 ),
-                validator: (value) => value == null || value.isEmpty ? "Please enter a date" : null,
+                validator: (value) =>
+                value == null || value.isEmpty ? loc.translate("required") : null,
               ),
               TextFormField(
                 controller: _paymentController,
-                decoration: const InputDecoration(labelText: "Payment Method"),
-                validator: (value) => value == null || value.isEmpty ? "Please enter a payment method" : null,
+                decoration: InputDecoration(labelText: loc.translate("paymentMethod")),
+                validator: (value) =>
+                value == null || value.isEmpty ? loc.translate("required") : null,
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _saveExpense,
-                child: Text(isEditing ? "Update Expense" : "Add Expense"),
+                child: Text(isEditing ? loc.translate("update") : loc.translate("addExpense")),
               ),
             ],
           ),
