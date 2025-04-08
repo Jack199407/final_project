@@ -4,9 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../database/database_helper.dart';
 import '../../localization/app_localizations.dart';
-
+/// A page that allows users to create or edit a vehicle maintenance record.
+///
+/// This page uses a form with input fields for vehicle name, type, service
+/// details, mileage, and cost. When editing an existing record, the fields are
+/// pre-filled. User inputs are validated and saved to a local database and shared preferences.
 class MaintenanceFormPage extends StatefulWidget {
+  /// Optional maintenance record to edit; if null, a new record will be created.
   final Map<String, dynamic>? record;
+
+  /// Creates a [MaintenanceFormPage] widget.
   const MaintenanceFormPage({Key? key, this.record}) : super(key: key);
 
   @override
@@ -14,12 +21,25 @@ class MaintenanceFormPage extends StatefulWidget {
 }
 
 class _MaintenanceFormPageState extends State<MaintenanceFormPage> {
+  /// Key used to validate the form.
   final _formKey = GlobalKey<FormState>();
+
+  /// Controller for the vehicle name input field.
   final _vehicleNameController = TextEditingController();
+
+  /// Controller for the vehicle type input field.
   final _vehicleTypeController = TextEditingController();
+
+  /// Controller for the service type input field.
   final _serviceTypeController = TextEditingController();
+
+  /// Controller for the service date input field.
   final _serviceDateController = TextEditingController();
+
+  /// Controller for the mileage input field.
   final _mileageController = TextEditingController();
+
+  /// Controller for the cost input field.
   final _costController = TextEditingController();
 
   @override
@@ -32,6 +52,7 @@ class _MaintenanceFormPageState extends State<MaintenanceFormPage> {
     }
   }
 
+  /// Fills form fields with data from an existing maintenance record.
   void _populateFields(Map<String, dynamic> record) {
     _vehicleNameController.text = record['vehicle_name'] ?? '';
     _vehicleTypeController.text = record['vehicle_type'] ?? '';
@@ -41,6 +62,7 @@ class _MaintenanceFormPageState extends State<MaintenanceFormPage> {
     _costController.text = record['cost'].toString();
   }
 
+  /// Loads default field values from shared preferences.
   Future<void> _loadFromPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     _vehicleNameController.text = prefs.getString('last_vehicle_name') ?? '';
@@ -51,6 +73,7 @@ class _MaintenanceFormPageState extends State<MaintenanceFormPage> {
     _costController.text = prefs.getString('last_cost') ?? '';
   }
 
+  /// Saves current field values to shared preferences for reuse.
   Future<void> _saveToPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('last_vehicle_name', _vehicleNameController.text);
@@ -61,6 +84,9 @@ class _MaintenanceFormPageState extends State<MaintenanceFormPage> {
     await prefs.setString('last_cost', _costController.text);
   }
 
+  /// Validates and saves the maintenance record to the database.
+  ///
+  /// If editing, it updates the record. If creating new, it inserts it.
   Future<void> _saveRecord() async {
     if (_formKey.currentState!.validate()) {
       final record = {
@@ -84,6 +110,7 @@ class _MaintenanceFormPageState extends State<MaintenanceFormPage> {
     }
   }
 
+  /// Deletes the current maintenance record from the database.
   Future<void> _deleteRecord() async {
     if (widget.record != null) {
       await DatabaseHelper.instance.delete('maintenance', widget.record!['id']);
@@ -118,17 +145,20 @@ class _MaintenanceFormPageState extends State<MaintenanceFormPage> {
               TextFormField(
                 controller: _vehicleNameController,
                 decoration: InputDecoration(labelText: loc.translate('vehicleName')),
-                validator: (value) => value == null || value.isEmpty ? loc.translate('required') : null,
+                validator: (value) =>
+                value == null || value.isEmpty ? loc.translate('required') : null,
               ),
               TextFormField(
                 controller: _vehicleTypeController,
                 decoration: InputDecoration(labelText: loc.translate('vehicleType')),
-                validator: (value) => value == null || value.isEmpty ? loc.translate('required') : null,
+                validator: (value) =>
+                value == null || value.isEmpty ? loc.translate('required') : null,
               ),
               TextFormField(
                 controller: _serviceTypeController,
                 decoration: InputDecoration(labelText: loc.translate('serviceType')),
-                validator: (value) => value == null || value.isEmpty ? loc.translate('required') : null,
+                validator: (value) =>
+                value == null || value.isEmpty ? loc.translate('required') : null,
               ),
               TextFormField(
                 controller: _serviceDateController,
@@ -136,19 +166,22 @@ class _MaintenanceFormPageState extends State<MaintenanceFormPage> {
                   labelText: loc.translate('serviceDate'),
                   hintText: 'YYYY-MM-DD',
                 ),
-                validator: (value) => value == null || value.isEmpty ? loc.translate('required') : null,
+                validator: (value) =>
+                value == null || value.isEmpty ? loc.translate('required') : null,
               ),
               TextFormField(
                 controller: _mileageController,
                 decoration: InputDecoration(labelText: loc.translate('mileage')),
                 keyboardType: TextInputType.number,
-                validator: (value) => value == null || value.isEmpty ? loc.translate('required') : null,
+                validator: (value) =>
+                value == null || value.isEmpty ? loc.translate('required') : null,
               ),
               TextFormField(
                 controller: _costController,
                 decoration: InputDecoration(labelText: loc.translate('cost')),
                 keyboardType: TextInputType.number,
-                validator: (value) => value == null || value.isEmpty ? loc.translate('required') : null,
+                validator: (value) =>
+                value == null || value.isEmpty ? loc.translate('required') : null,
               ),
               const SizedBox(height: 20),
               ElevatedButton(

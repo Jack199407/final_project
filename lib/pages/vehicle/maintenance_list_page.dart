@@ -5,7 +5,12 @@ import '../../database/database_helper.dart';
 import 'maintenance_form_page.dart';
 import '../../localization/app_localizations.dart';
 
+/// A page that displays a list of vehicle maintenance records.
+///
+/// Users can tap on a record to edit it or press the "+" button to add a new one.
+/// Records are retrieved from a local SQLite database and can be deleted individually.
 class MaintenanceListPage extends StatefulWidget {
+  /// Creates a [MaintenanceListPage] widget.
   const MaintenanceListPage({Key? key}) : super(key: key);
 
   @override
@@ -13,6 +18,7 @@ class MaintenanceListPage extends StatefulWidget {
 }
 
 class _MaintenanceListPageState extends State<MaintenanceListPage> {
+  /// A list holding all maintenance records fetched from the database.
   List<Map<String, dynamic>> _maintenanceRecords = [];
 
   @override
@@ -21,6 +27,7 @@ class _MaintenanceListPageState extends State<MaintenanceListPage> {
     _loadMaintenanceRecords();
   }
 
+  /// Loads all maintenance records from the database into [_maintenanceRecords].
   Future<void> _loadMaintenanceRecords() async {
     final records = await DatabaseHelper.instance.queryAll('maintenance');
     setState(() {
@@ -28,6 +35,7 @@ class _MaintenanceListPageState extends State<MaintenanceListPage> {
     });
   }
 
+  /// Deletes a maintenance record by its [id] and refreshes the list.
   Future<void> _deleteMaintenanceRecord(int id) async {
     await DatabaseHelper.instance.delete('maintenance', id);
     _loadMaintenanceRecords();
