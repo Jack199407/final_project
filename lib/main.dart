@@ -8,11 +8,14 @@ import 'pages/event/event_list_page.dart';
 import 'pages/customer/customer_list_page.dart';
 import 'pages/expense/expense_list_page.dart';
 import 'pages/vehicle/maintenance_list_page.dart';
+import 'widgets/app_ui.dart';
 
-// language change
+/// Global locale controller for switching app language dynamically.
 final ValueNotifier<Locale> localeNotifier = ValueNotifier(const Locale('en'));
 
+/// Entry point of the application.
 void main() {
+  // Initialize SQLite for desktop platforms.
   if (defaultTargetPlatform == TargetPlatform.windows ||
       defaultTargetPlatform == TargetPlatform.linux ||
       defaultTargetPlatform == TargetPlatform.macOS) {
@@ -23,9 +26,11 @@ void main() {
   runApp(const MyApp());
 }
 
+/// Root widget of the application.
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  /// Builds the MaterialApp with localization and theme support.
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<Locale>(
@@ -33,7 +38,7 @@ class MyApp extends StatelessWidget {
       builder: (context, locale, _) {
         return MaterialApp(
           title: 'Group Project App',
-          theme: ThemeData(primarySwatch: Colors.blue),
+          theme: AppUI.theme(),
           debugShowCheckedModeBanner: false,
           home: const MainPage(),
           locale: locale,
@@ -61,9 +66,11 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// Main dashboard page providing access to the different modules.
 class MainPage extends StatelessWidget {
   const MainPage({Key? key}) : super(key: key);
 
+  /// Builds the UI for the main navigation page.
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
@@ -81,9 +88,9 @@ class MainPage extends StatelessWidget {
                 localeNotifier.value = const Locale('zh');
               }
             },
-            itemBuilder: (context) => [
-              const PopupMenuItem(value: 'en', child: Text('English')),
-              const PopupMenuItem(value: 'zh', child: Text('中文')),
+            itemBuilder: (context) => const [
+              PopupMenuItem(value: 'en', child: Text('English')),
+              PopupMenuItem(value: 'zh', child: Text('中文')),
             ],
           ),
         ],
@@ -93,41 +100,47 @@ class MainPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
+              AppUI.buildButton(
+                label: loc.translate('eventPlanner'),
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const EventListPage()),
                   );
                 },
-                child: Text(loc.translate('eventPlanner')),
               ),
-              ElevatedButton(
+              const SizedBox(height: 16),
+
+              AppUI.buildButton(
+                label: loc.translate('customerList'),
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const CustomerListPage()),
                   );
                 },
-                child: Text(loc.translate('customerList')),
               ),
-              ElevatedButton(
+              const SizedBox(height: 16),
+
+              AppUI.buildButton(
+                label: loc.translate('expenseTracker'),
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const ExpenseListPage()),
                   );
                 },
-                child: Text(loc.translate('expenseTracker')),
               ),
-              ElevatedButton(
+              const SizedBox(height: 16),
+
+              AppUI.buildButton(
+                label: loc.translate('vehicleMaintenance'),
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const MaintenanceListPage()),
                   );
                 },
-                child: Text(loc.translate('vehicleMaintenance')),
               ),
             ],
           ),
@@ -136,6 +149,7 @@ class MainPage extends StatelessWidget {
     );
   }
 }
+
 
 
 

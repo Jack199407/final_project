@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../database/database_helper.dart';
-import '../../localization/app_localizations.dart'; // localization
+import '../../localization/app_localizations.dart';
+import '../../widgets/app_ui.dart';
 
+/// A page to create or edit an event.
+/// If [event] is provided, the form is in edit mode.
 class EventFormPage extends StatefulWidget {
   final Map<String, dynamic>? event;
 
+  /// Constructor for [EventFormPage].
+  /// If [event] is provided, the form is pre-filled for editing.
   const EventFormPage({Key? key, this.event}) : super(key: key);
 
   @override
@@ -21,6 +26,7 @@ class _EventFormPageState extends State<EventFormPage> {
   late TextEditingController _locationController;
   late TextEditingController _descriptionController;
 
+  /// Whether the form is in edit mode (based on presence of [widget.event]).
   bool get _isEditMode => widget.event != null;
 
   @override
@@ -32,11 +38,13 @@ class _EventFormPageState extends State<EventFormPage> {
     _locationController = TextEditingController(text: widget.event?['location'] ?? '');
     _descriptionController = TextEditingController(text: widget.event?['description'] ?? '');
 
+    // Prompt user to copy the last saved event if in create mode.
     if (!_isEditMode) {
       _askToCopyLastEvent();
     }
   }
 
+  /// Shows a dialog asking if the user wants to copy the last saved event.
   Future<void> _askToCopyLastEvent() async {
     final prefs = await SharedPreferences.getInstance();
     final savedName = prefs.getString('lastEvent_name') ?? '';
@@ -76,6 +84,7 @@ class _EventFormPageState extends State<EventFormPage> {
     );
   }
 
+  /// Saves the event data to shared preferences.
   Future<void> _saveEventToPrefs(Map<String, dynamic> eventData) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('lastEvent_name', eventData['name'] ?? '');
@@ -85,6 +94,7 @@ class _EventFormPageState extends State<EventFormPage> {
     await prefs.setString('lastEvent_description', eventData['description'] ?? '');
   }
 
+  /// Handles saving the form data to the database.
   Future<void> _onSubmit() async {
     final loc = AppLocalizations.of(context);
 
@@ -115,6 +125,7 @@ class _EventFormPageState extends State<EventFormPage> {
     }
   }
 
+  /// Handles deleting the current event from the database.
   Future<void> _onDelete() async {
     if (!_isEditMode) return;
     final loc = AppLocalizations.of(context);
@@ -129,9 +140,12 @@ class _EventFormPageState extends State<EventFormPage> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_isEditMode ? loc.translate('editEvent') : loc.translate('newEvent')),
+      appBar: AppUI.buildAppBar(
+        title: _isEditMode
+            ? loc.translate('editEvent')
+            : loc.translate('newEvent'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -171,16 +185,14 @@ class _EventFormPageState extends State<EventFormPage> {
                     value == null || value.isEmpty ? loc.translate('descriptionRequired') : null,
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
+              AppUI.buildButton(
+                label: _isEditMode ? loc.translate('updateEvent') : loc.translate('createEvent'),
                 onPressed: _onSubmit,
-                child: Text(_isEditMode
-                    ? loc.translate('updateEvent')
-                    : loc.translate('createEvent')),
               ),
               if (_isEditMode)
-                OutlinedButton(
+                AppUI.buildOutlinedButton(
+                  label: loc.translate('deleteEvent'),
                   onPressed: _onDelete,
-                  child: Text(loc.translate('deleteEvent')),
                 ),
             ],
           ),
@@ -189,6 +201,8 @@ class _EventFormPageState extends State<EventFormPage> {
     );
   }
 }
+
+
 
 
 
